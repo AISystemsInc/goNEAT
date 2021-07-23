@@ -3,8 +3,8 @@ package experiment
 import (
 	"encoding/gob"
 	"fmt"
+	"github.com/AISystemsInc/goNEAT/v2/neat/genetics"
 	"github.com/sbinet/npyio/npz"
-	"github.com/yaricom/goNEAT/v2/neat/genetics"
 	"gonum.org/v1/gonum/mat"
 	"io"
 	"math"

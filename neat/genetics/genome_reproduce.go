@@ -2,8 +2,8 @@ package genetics
 
 import (
 	"fmt"
-	"github.com/yaricom/goNEAT/v2/neat"
-	"github.com/yaricom/goNEAT/v2/neat/network"
+	"github.com/AISystemsInc/goNEAT/v2/neat"
+	"github.com/AISystemsInc/goNEAT/v2/neat/network"
 	"math/rand"
 )
 

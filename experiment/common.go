@@ -4,8 +4,8 @@ package experiment
 import (
 	"errors"
 	"fmt"
-	"github.com/yaricom/goNEAT/v2/neat"
-	"github.com/yaricom/goNEAT/v2/neat/genetics"
+	"github.com/AISystemsInc/goNEAT/v2/neat"
+	"github.com/AISystemsInc/goNEAT/v2/neat/genetics"
 	"log"
 	"os"
 )

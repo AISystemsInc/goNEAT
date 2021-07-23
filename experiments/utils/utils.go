@@ -1,9 +1,9 @@
 package utils
 
 import (
+	"github.com/AISystemsInc/goNEAT/v2/neat"
+	"github.com/AISystemsInc/goNEAT/v2/neat/genetics"
 	"github.com/pkg/errors"
-	"github.com/yaricom/goNEAT/v2/neat"
-	"github.com/yaricom/goNEAT/v2/neat/genetics"
 	"os"
 )
 

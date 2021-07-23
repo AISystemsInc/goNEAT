@@ -2,7 +2,7 @@ package experiment
 
 import (
 	"encoding/gob"
-	"github.com/yaricom/goNEAT/v2/neat/genetics"
+	"github.com/AISystemsInc/goNEAT/v2/neat/genetics"
 	"sort"
 	"time"
 )

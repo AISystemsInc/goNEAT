@@ -3,8 +3,8 @@ package network
 import (
 	"bytes"
 	"fmt"
-	"github.com/yaricom/goNEAT/v2/neat"
-	"github.com/yaricom/goNEAT/v2/neat/math"
+	"github.com/AISystemsInc/goNEAT/v2/neat"
+	"github.com/AISystemsInc/goNEAT/v2/neat/math"
 )
 
 // NNode is either a NEURON or a SENSOR.

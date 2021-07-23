@@ -8,9 +8,9 @@ package xor
 
 import (
 	"fmt"
-	"github.com/yaricom/goNEAT/v2/experiment"
-	"github.com/yaricom/goNEAT/v2/neat"
-	"github.com/yaricom/goNEAT/v2/neat/genetics"
+	"github.com/AISystemsInc/goNEAT/v2/experiment"
+	"github.com/AISystemsInc/goNEAT/v2/neat"
+	"github.com/AISystemsInc/goNEAT/v2/neat/genetics"
 	"math"
 	"os"
 )

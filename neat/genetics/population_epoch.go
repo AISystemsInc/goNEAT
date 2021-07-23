@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/gob"
 	"fmt"
-	"github.com/yaricom/goNEAT/v2/neat"
+	"github.com/AISystemsInc/goNEAT/v2/neat"
 	"sort"
 	"sync"
 )

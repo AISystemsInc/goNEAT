@@ -1,9 +1,9 @@
 package network
 
 import (
+	"github.com/AISystemsInc/goNEAT/v2/neat/math"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/yaricom/goNEAT/v2/neat/math"
 	"testing"
 )
 

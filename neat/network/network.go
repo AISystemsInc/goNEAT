@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/yaricom/goNEAT/v2/neat/math"
+	"github.com/AISystemsInc/goNEAT/v2/neat/math"
 )
 
 // Network is a collection of all nodes within an organism's phenotype, which effectively defines Neural Network topology.

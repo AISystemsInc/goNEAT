@@ -3,7 +3,7 @@ package neat
 import (
 	"errors"
 	"fmt"
-	"github.com/yaricom/goNEAT/v2/neat/math"
+	"github.com/AISystemsInc/goNEAT/v2/neat/math"
 	"math/rand"
 )
 

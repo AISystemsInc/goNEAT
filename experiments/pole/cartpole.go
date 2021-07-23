@@ -2,10 +2,10 @@ package pole
 
 import (
 	"fmt"
-	"github.com/yaricom/goNEAT/v2/experiment"
-	"github.com/yaricom/goNEAT/v2/neat"
-	"github.com/yaricom/goNEAT/v2/neat/genetics"
-	"github.com/yaricom/goNEAT/v2/neat/network"
+	"github.com/AISystemsInc/goNEAT/v2/experiment"
+	"github.com/AISystemsInc/goNEAT/v2/neat"
+	"github.com/AISystemsInc/goNEAT/v2/neat/genetics"
+	"github.com/AISystemsInc/goNEAT/v2/neat/network"
 	"math"
 	"math/rand"
 	"os"

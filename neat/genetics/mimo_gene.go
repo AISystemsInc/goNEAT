@@ -2,7 +2,7 @@ package genetics
 
 import (
 	"fmt"
-	"github.com/yaricom/goNEAT/v2/neat/network"
+	"github.com/AISystemsInc/goNEAT/v2/neat/network"
 )
 
 // MIMOControlGene The Multiple-Input Multiple-Output (MIMO) control Gene allows to create modular genomes, in which several groups of genes

@@ -3,8 +3,8 @@ package experiment
 import (
 	"bytes"
 	"encoding/gob"
+	"github.com/AISystemsInc/goNEAT/v2/neat/genetics"
 	"github.com/pkg/errors"
-	"github.com/yaricom/goNEAT/v2/neat/genetics"
 	"math"
 	"reflect"
 	"sort"

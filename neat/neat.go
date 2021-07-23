@@ -5,9 +5,9 @@ package neat
 import (
 	"context"
 	"fmt"
+	"github.com/AISystemsInc/goNEAT/v2/neat/math"
 	"github.com/pkg/errors"
 	"github.com/spf13/cast"
-	"github.com/yaricom/goNEAT/v2/neat/math"
 	"gopkg.in/yaml.v3"
 	"io"
 	"io/ioutil"
