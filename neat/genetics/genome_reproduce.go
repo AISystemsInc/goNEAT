@@ -116,37 +116,46 @@ func (g *Genome) mateMultipoint(og *Genome, genomeId int, fitness1, fitness2 flo
 		// skip=false
 
 		// Check to see if the chosen gene conflicts with an already chosen gene i.e. do they represent the same link
-		var (
-			results = make(chan bool)
-			done    = 0
-		)
+		if len(newGenes) > 0 {
+			var (
+				results = make(chan bool)
+				cancel  = make(chan struct{})
+				done    = 0
+			)
 
-		for _, gene := range newGenes {
-			go func(gene *Gene) {
-				if skip {
-					return
-				}
-
-				results <- gene.Link.IsEqualGenetically(chosenGene.Link)
-			}(gene)
-		}
-
-		if len(newGenes) == 0 {
-			close(results)
-		}
-
-		for result := range results {
-			if result && !skip {
-				skip = true
-
-				go func(done int) {
-					for range results {
-						if done >= len(newGenes) {
-							close(results)
-						}
+			for _, gene := range newGenes {
+				go func(gene *Gene) {
+					if skip {
+						return
 					}
-				}(done)
-				break
+
+					results <- gene.Link.IsEqualGenetically(chosenGene.Link)
+				}(gene)
+			}
+
+		loop:
+			for {
+				select {
+				case result, openOrMore := <-results:
+					if !openOrMore {
+						break loop
+					}
+
+					done++
+
+					if result && !skip {
+						skip = true
+						go func() {
+							cancel <- struct{}{}
+						}()
+					} else if done >= len(newGenes) {
+						close(results)
+					}
+				case <-cancel:
+					close(results)
+					close(cancel)
+					break loop
+				}
 			}
 		}
 
@@ -357,37 +366,46 @@ func (g *Genome) mateMultipointAvg(og *Genome, genomeId int, fitness1, fitness2 
 		// skip=false
 
 		// Check to see if the chosen gene conflicts with an already chosen gene i.e. do they represent the same link
-		var (
-			results = make(chan bool)
-			done    = 0
-		)
+		if len(newGenes) > 0 {
+			var (
+				results = make(chan bool)
+				cancel  = make(chan struct{})
+				done    = 0
+			)
 
-		for _, gene := range newGenes {
-			go func(gene *Gene) {
-				if skip {
-					return
-				}
-
-				results <- gene.Link.IsEqualGenetically(chosenGene.Link)
-			}(gene)
-		}
-
-		if len(newGenes) == 0 {
-			close(results)
-		}
-
-		for result := range results {
-			if result && !skip {
-				skip = true
-
-				go func(done int) {
-					for range results {
-						if done >= len(newGenes) {
-							close(results)
-						}
+			for _, gene := range newGenes {
+				go func(gene *Gene) {
+					if skip {
+						return
 					}
-				}(done)
-				break
+
+					results <- gene.Link.IsEqualGenetically(chosenGene.Link)
+				}(gene)
+			}
+
+		loop:
+			for {
+				select {
+				case result, openOrMore := <-results:
+					if !openOrMore {
+						break loop
+					}
+
+					done++
+
+					if result && !skip {
+						skip = true
+						go func() {
+							cancel <- struct{}{}
+						}()
+					} else if done >= len(newGenes) {
+						close(results)
+					}
+				case <-cancel:
+					close(results)
+					close(cancel)
+					break loop
+				}
 			}
 		}
 
