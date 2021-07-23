@@ -123,6 +123,10 @@ func (g *Genome) mateMultipoint(og *Genome, genomeId int, fitness1, fitness2 flo
 
 		for _, gene := range newGenes {
 			go func(gene *Gene) {
+				if skip {
+					return
+				}
+
 				results <- gene.Link.IsEqualGenetically(chosenGene.Link)
 			}(gene)
 		}
@@ -134,10 +138,15 @@ func (g *Genome) mateMultipoint(og *Genome, genomeId int, fitness1, fitness2 flo
 		for result := range results {
 			if result && !skip {
 				skip = true
-			}
-			done++
-			if done >= len(newGenes) {
-				close(results)
+
+				go func(done int) {
+					for range results {
+						if done >= len(newGenes) {
+							close(results)
+						}
+					}
+				}(done)
+				break
 			}
 		}
 
@@ -355,6 +364,10 @@ func (g *Genome) mateMultipointAvg(og *Genome, genomeId int, fitness1, fitness2 
 
 		for _, gene := range newGenes {
 			go func(gene *Gene) {
+				if skip {
+					return
+				}
+
 				results <- gene.Link.IsEqualGenetically(chosenGene.Link)
 			}(gene)
 		}
@@ -366,10 +379,15 @@ func (g *Genome) mateMultipointAvg(og *Genome, genomeId int, fitness1, fitness2 
 		for result := range results {
 			if result && !skip {
 				skip = true
-			}
-			done++
-			if done >= len(newGenes) {
-				close(results)
+
+				go func(done int) {
+					for range results {
+						if done >= len(newGenes) {
+							close(results)
+						}
+					}
+				}(done)
+				break
 			}
 		}
 
