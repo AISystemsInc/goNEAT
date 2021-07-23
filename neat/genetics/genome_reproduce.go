@@ -116,10 +116,28 @@ func (g *Genome) mateMultipoint(og *Genome, genomeId int, fitness1, fitness2 flo
 		// skip=false
 
 		// Check to see if the chosen gene conflicts with an already chosen gene i.e. do they represent the same link
+		var (
+			results = make(chan bool)
+			done    = 0
+		)
+
 		for _, gene := range newGenes {
-			if gene.Link.IsEqualGenetically(chosenGene.Link) {
+			go func(gene *Gene) {
+				results <- gene.Link.IsEqualGenetically(chosenGene.Link)
+			}(gene)
+		}
+
+		if len(newGenes) == 0 {
+			close(results)
+		}
+
+		for result := range results {
+			if result && !skip {
 				skip = true
-				break
+			}
+			done++
+			if done >= len(newGenes) {
+				close(results)
 			}
 		}
 
@@ -330,10 +348,28 @@ func (g *Genome) mateMultipointAvg(og *Genome, genomeId int, fitness1, fitness2 
 		// skip=false
 
 		// Check to see if the chosen gene conflicts with an already chosen gene i.e. do they represent the same link
+		var (
+			results = make(chan bool)
+			done    = 0
+		)
+
 		for _, gene := range newGenes {
-			if gene.Link.IsEqualGenetically(chosenGene.Link) {
+			go func(gene *Gene) {
+				results <- gene.Link.IsEqualGenetically(chosenGene.Link)
+			}(gene)
+		}
+
+		if len(newGenes) == 0 {
+			close(results)
+		}
+
+		for result := range results {
+			if result && !skip {
 				skip = true
-				break
+			}
+			done++
+			if done >= len(newGenes) {
+				close(results)
 			}
 		}
 
