@@ -1,4 +1,4 @@
-module github.com/yaricom/goNEAT/v2
+module github.com/AISystemsInc/goNEAT/v2
 
 go 1.15
 
