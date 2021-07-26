@@ -116,40 +116,10 @@ func (g *Genome) mateMultipoint(og *Genome, genomeId int, fitness1, fitness2 flo
 		//skip=false
 
 		// Check to see if the chosen gene conflicts with an already chosen gene i.e. do they represent the same link
-
-		if len(newGenes) > 0 {
-			var (
-				skipping = make(chan bool)
-				done     = make(chan struct{})
-				received int
-			)
-
-			for _, gene := range newGenes {
-				go func(gene *Gene) {
-					select {
-					case skipping <- gene.Link.IsEqualGenetically(chosenGene.Link):
-					case <-done:
-					}
-				}(gene)
-			}
-
-			//<-time.After(time.Millisecond*250)
-
-			for {
-				skipped := <-skipping
-				received++
-
-				if skipped {
-					skip = true
-					close(done)
-					break
-				}
-
-				if received >= len(newGenes) {
-					close(done)
-					close(skipping)
-					break
-				}
+		for _, gene := range newGenes {
+			if gene.Link.IsEqualGenetically(chosenGene.Link) {
+				skip = true
+				break
 			}
 		}
 
@@ -360,39 +330,10 @@ func (g *Genome) mateMultipointAvg(og *Genome, genomeId int, fitness1, fitness2 
 		// skip=false
 
 		// Check to see if the chosen gene conflicts with an already chosen gene i.e. do they represent the same link
-		if len(newGenes) > 0 {
-			var (
-				skipping = make(chan bool)
-				done     = make(chan struct{})
-				received int
-			)
-
-			for _, gene := range newGenes {
-				go func(gene *Gene) {
-					select {
-					case skipping <- gene.Link.IsEqualGenetically(chosenGene.Link):
-					case <-done:
-					}
-				}(gene)
-			}
-
-			//<-time.After(time.Millisecond*250)
-
-			for {
-				skipped := <-skipping
-				received++
-
-				if skipped {
-					skip = true
-					close(done)
-					break
-				}
-
-				if received >= len(newGenes) {
-					close(done)
-					close(skipping)
-					break
-				}
+		for _, gene := range newGenes {
+			if gene.Link.IsEqualGenetically(chosenGene.Link) {
+				skip = true
+				break
 			}
 		}
 
