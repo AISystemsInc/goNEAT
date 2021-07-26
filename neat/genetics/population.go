@@ -48,10 +48,10 @@ type Population struct {
 
 // The auxiliary data type to hold results of parallel reproduction sent over the wires
 type reproductionResult struct {
-	babiesStored int    // the number of offsprings saved
-	babies       []byte // the encoded offsprings
-	err          error  // error occurred during reproduction if any
-	speciesId    int    // the ID of species used for reproduction
+	babiesStored int         // the number of offsprings saved
+	babies       []*Organism // the encoded offsprings
+	err          error       // error occurred during reproduction if any
+	speciesId    int         // the ID of species used for reproduction
 }
 
 // NewPopulation constructs off of a single spawning Genome

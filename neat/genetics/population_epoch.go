@@ -1,13 +1,10 @@
 package genetics
 
 import (
-	"bytes"
 	"context"
-	"encoding/gob"
 	"fmt"
 	"github.com/AISystemsInc/goNEAT/v2/neat"
 	"sort"
-	"sync"
 )
 
 // PopulationEpochExecutor Executes epoch's turnover for a population of the organisms
@@ -219,66 +216,48 @@ func (p *ParallelPopulationEpochExecutor) reproduce(ctx context.Context, generat
 
 	// Perform reproduction. Reproduction is done on a per-Species basis
 	spNum := len(pop.Species)
-	resChan := make(chan reproductionResult, spNum)
-	// The wait group to wait for all GO routines
-	var wg sync.WaitGroup
+	resChan := make(chan reproductionResult)
+	done := 0
 
-	for _, species := range pop.Species {
-		wg.Add(1)
-		// run in separate GO thread
-		go func(ctx context.Context, sp *Species, generation int, p *Population, sortedSpecies []*Species, resChan chan<- reproductionResult, wg *sync.WaitGroup) {
-			defer wg.Done()
-			babies, err := sp.reproduce(ctx, generation, p, sortedSpecies)
+	go func() {
+		for _, species := range pop.Species {
+			// run in separate GO thread
+			go func(ctx context.Context, sp *Species, generation int, p *Population, sortedSpecies []*Species, resChan chan<- reproductionResult) {
+				babies, err := sp.reproduce(ctx, generation, p, sortedSpecies)
 
-			res := reproductionResult{}
-			if err == nil {
-				res.speciesId = sp.Id
-
-				// fill babies into result
-				var buf bytes.Buffer
-				enc := gob.NewEncoder(&buf)
-				for _, baby := range babies {
-					if err = enc.Encode(baby); err != nil {
-						break
-					}
-				}
+				res := reproductionResult{}
 				if err == nil {
-					res.babies = buf.Bytes()
+					res.speciesId = sp.Id
+					res.babies = babies
 					res.babiesStored = len(babies)
 				}
-			}
-			res.err = err
 
-			// write result to channel and signal to wait group
-			resChan <- res
+				res.err = err
 
-		}(ctx, species, generation, pop, p.sequential.sortedSpecies, resChan, &wg)
-	}
+				resChan <- res
 
-	// wait for reproduction results
-	wg.Wait()
-	close(resChan)
+			}(ctx, species, generation, pop, p.sequential.sortedSpecies, resChan)
+		}
+	}()
 
 	// read reproduction results, instantiate progeny and speciate over population
 	babies := make([]*Organism, 0)
 	for result := range resChan {
+		done++
 		if result.err != nil {
 			return result.err
 		}
-		// read baby genome
-		dec := gob.NewDecoder(bytes.NewBuffer(result.babies))
-		for i := 0; i < result.babiesStored; i++ {
-			org := Organism{}
-			err := dec.Decode(&org)
-			if err != nil {
-				return fmt.Errorf("failed to decode baby organism, reason: %v", err)
-			}
-			babies = append(babies, &org)
-		}
+
+		babies = append(babies, result.babies...)
+
 		if result.speciesId == p.sequential.bestSpeciesId {
 			// store flag if best species reproduced - it will be used to determine if best species
 			// produced offspring before died
 			p.sequential.bestSpeciesReproduced = babies != nil
+		}
+
+		if done >= spNum {
+			close(resChan)
 		}
 	}
 

@@ -113,48 +113,42 @@ func (g *Genome) mateMultipoint(og *Genome, genomeId int, fitness1, fitness2 flo
 		}
 
 		// Uncomment this line to let growth go faster (from both parents excesses)
-		// skip=false
+		//skip=false
 
 		// Check to see if the chosen gene conflicts with an already chosen gene i.e. do they represent the same link
+
 		if len(newGenes) > 0 {
 			var (
-				results = make(chan bool)
-				cancel  = make(chan struct{})
-				done    = 0
+				skipping = make(chan bool)
+				done     = make(chan struct{})
+				received int
 			)
 
 			for _, gene := range newGenes {
 				go func(gene *Gene) {
-					if skip {
-						return
+					select {
+					case skipping <- gene.Link.IsEqualGenetically(chosenGene.Link):
+					case <-done:
 					}
-
-					results <- gene.Link.IsEqualGenetically(chosenGene.Link)
 				}(gene)
 			}
 
-		loop:
+			//<-time.After(time.Millisecond*250)
+
 			for {
-				select {
-				case result, openOrMore := <-results:
-					if !openOrMore {
-						break loop
-					}
+				skipped := <-skipping
+				received++
 
-					done++
+				if skipped {
+					skip = true
+					close(done)
+					break
+				}
 
-					if result && !skip {
-						skip = true
-						go func() {
-							cancel <- struct{}{}
-						}()
-					} else if done >= len(newGenes) {
-						close(results)
-					}
-				case <-cancel:
-					close(results)
-					close(cancel)
-					break loop
+				if received >= len(newGenes) {
+					close(done)
+					close(skipping)
+					break
 				}
 			}
 		}
@@ -368,43 +362,36 @@ func (g *Genome) mateMultipointAvg(og *Genome, genomeId int, fitness1, fitness2 
 		// Check to see if the chosen gene conflicts with an already chosen gene i.e. do they represent the same link
 		if len(newGenes) > 0 {
 			var (
-				results = make(chan bool)
-				cancel  = make(chan struct{})
-				done    = 0
+				skipping = make(chan bool)
+				done     = make(chan struct{})
+				received int
 			)
 
 			for _, gene := range newGenes {
 				go func(gene *Gene) {
-					if skip {
-						return
+					select {
+					case skipping <- gene.Link.IsEqualGenetically(chosenGene.Link):
+					case <-done:
 					}
-
-					results <- gene.Link.IsEqualGenetically(chosenGene.Link)
 				}(gene)
 			}
 
-		loop:
+			//<-time.After(time.Millisecond*250)
+
 			for {
-				select {
-				case result, openOrMore := <-results:
-					if !openOrMore {
-						break loop
-					}
+				skipped := <-skipping
+				received++
 
-					done++
+				if skipped {
+					skip = true
+					close(done)
+					break
+				}
 
-					if result && !skip {
-						skip = true
-						go func() {
-							cancel <- struct{}{}
-						}()
-					} else if done >= len(newGenes) {
-						close(results)
-					}
-				case <-cancel:
-					close(results)
-					close(cancel)
-					break loop
+				if received >= len(newGenes) {
+					close(done)
+					close(skipping)
+					break
 				}
 			}
 		}
@@ -466,6 +453,7 @@ func (g *Genome) mateMultipointAvg(og *Genome, genomeId int, fitness1, fitness2 
 			newGenes = append(newGenes, gene)
 		} // end SKIP
 	} // end FOR
+
 	// check if parent's MIMO control genes should be inherited
 	if len(g.ControlGenes) != 0 || len(og.ControlGenes) != 0 {
 		// MIMO control genes found at least in one parent - append it to child if appropriate
